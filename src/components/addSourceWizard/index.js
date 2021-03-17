@@ -11,12 +11,12 @@ import FinalWizard from './FinalWizard';
 import { wizardTitle } from './stringConstants';
 
 import isSuperKey from '../../utilities/isSuperKey';
-import { timeoutedApps } from '../../utilities/constants';
+import { CLOUD_VENDOR, REDHAT_VENDOR, timeoutedApps } from '../../utilities/constants';
 import createSuperSource from '../../api/createSuperSource';
 import { doCreateSource } from '../../api/createSource';
 import CloseModal from '../CloseModal';
 
-const prepareInitialValues = (initialValues) => ({
+const prepareInitialValues = (initialValues, activeVendor) => ({
   isSubmitted: false,
   isFinished: false,
   isErrored: false,
@@ -24,6 +24,7 @@ const prepareInitialValues = (initialValues) => ({
   values: initialValues,
   createdSource: {},
   error: undefined,
+  activeVendor,
 });
 
 const reducer = (state, { type, values, data, error, initialValues, sourceTypes }) => {
@@ -65,11 +66,12 @@ const AddSourceWizard = ({
   selectedType,
   initialWizardState,
   submitCallback,
+  activeVendor: propsActiveVendor,
 }) => {
-  const [{ isErrored, isFinished, isSubmitted, values, error, isCancelling, createdSource, ...state }, dispatch] = useReducer(
-    reducer,
-    prepareInitialValues(initialValues)
-  );
+  const [
+    { isErrored, isFinished, isSubmitted, values, error, isCancelling, createdSource, activeVendor, ...state },
+    dispatch,
+  ] = useReducer(reducer, prepareInitialValues(initialValues, propsActiveVendor));
 
   const onSubmit = (formValues, sourceTypes, wizardState) => {
     dispatch({ type: 'prepareSubmitState', values: formValues, sourceTypes });
@@ -117,6 +119,7 @@ const AddSourceWizard = ({
           disableAppSelection={disableAppSelection}
           selectedType={selectedType}
           initialWizardState={initialWizardState}
+          activeVendor={activeVendor}
         />
       </React.Fragment>
     );
@@ -137,6 +140,7 @@ const AddSourceWizard = ({
       tryAgain={() => onSubmit(values, state.sourceTypes)}
       afterSuccess={afterSuccess}
       sourceTypes={state.sourceTypes}
+      activeVendor={activeVendor}
     />
   );
 };
@@ -173,6 +177,7 @@ AddSourceWizard.propTypes = {
   selectedType: PropTypes.string,
   initialWizardState: PropTypes.object,
   submitCallback: PropTypes.func,
+  activeVendor: PropTypes.oneOf([REDHAT_VENDOR, CLOUD_VENDOR]),
 };
 
 AddSourceWizard.defaultProps = {

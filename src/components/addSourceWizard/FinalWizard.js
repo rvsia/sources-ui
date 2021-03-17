@@ -32,6 +32,7 @@ const FinalWizard = ({
   tryAgain,
   afterSuccess,
   sourceTypes,
+  activeVendor,
 }) => {
   const [isDeletingSource, setIsDeleting] = useState();
   const [isAfterDeletion, setDeleted] = useState();
@@ -179,8 +180,8 @@ const FinalWizard = ({
       className="sources"
       isOpen={true}
       onClose={isFinished ? afterSubmit : afterError}
-      title={wizardTitle()}
-      description={wizardDescription()}
+      title={wizardTitle(activeVendor)}
+      description={wizardDescription(activeVendor)}
       steps={[
         {
           name: 'Finish',
@@ -211,6 +212,7 @@ FinalWizard.propTypes = {
       name: PropTypes.string.isRequired,
     })
   ),
+  activeVendor: PropTypes.string,
 };
 
 export default FinalWizard;
